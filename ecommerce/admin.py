@@ -30,5 +30,16 @@ class CategoryAdmin(admin.ModelAdmin):
     # sets up slug to be generated from category name
     prepopulated_fields = {'slug': ('name',)}
 
+
+class CustomerAdmin(admin.ModelAdmin):
+    # sets up values for how admin site lists categories
+    list_display = ('first_name', 'last_name', 'email','phone_number')
+    list_display_links = ('first_name',)
+    list_per_page = 50
+    ordering = ['first_name']
+    search_fields = ['first_name', 'last_name', 'email', 'phone_number']
+
+
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(Customer, CustomerAdmin)

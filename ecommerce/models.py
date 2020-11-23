@@ -69,3 +69,18 @@ class Product(models.Model):
             Product.objects.filter(categories=category_id,)
         else:
             Product.objects.all()
+
+
+class Customer(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=15)
+    password = models.CharField(max_length=500)
+
+    class Meta:
+        db_table = "customer"
+        verbose_name_plural = "customers"
+
+    def __str__(self):
+        return self.first_name + self.last_name
