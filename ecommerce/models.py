@@ -44,6 +44,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     categories = models.ManyToManyField(Category)
+
     class Meta:
         db_table = "products"
         ordering = ['-created_at']
@@ -61,3 +62,10 @@ class Product(models.Model):
 
         else:
             return None
+
+    @staticmethod
+    def get_products_by_category(category_id):
+        if category_id:
+            Product.objects.filter(categories=category_id,)
+        else:
+            Product.objects.all()
