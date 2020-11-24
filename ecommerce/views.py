@@ -1,9 +1,9 @@
-from math import ceil
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Product, Category, Customer
-from .forms import UserForm
+from django.contrib.auth.hashers import make_password, check_password
+
 
 # Create your views here.
 
@@ -46,16 +46,32 @@ def signup(request):
         email = request.POST.get('email')
         phone_number = request.POST.get('phone')
         password = request.POST.get('password')
+        password = make_password(password)
+
+        email_exists = None
+        if Customer.objects.filter(email=email, ):
+            email_exists = True
+        else:
+            email_exists = False
+        value = {
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "phone_number": phone_number,
+        }
 
         error_message = None
+
         if not first_name:
             error_message = "First Name is Required!!!"
         elif not last_name:
             error_message = "Last Name is Required!!!"
-        elif not phone_number:
-            error_message = "Phone Number is Required!!!"
+        elif email_exists:
+            error_message = "Email is Already Registered"
         elif not email:
             error_message = "E-Mail is Required!!!"
+        elif not phone_number:
+            error_message = "Phone Number is Required!!!"
         elif len(phone_number) <= 9:
             error_message = "Please Enter a Valid Phone Number"
         elif not password:
@@ -69,14 +85,38 @@ def signup(request):
                 phone_number=phone_number,
                 password=password,
             )
-            messages.success(request, "New User Added Successfully")
+            messages.success(request, "New User Registered Successfully")
             return redirect('signup')
         else:
             context = {
-                "error_message": error_message
+                "error_message": error_message,
+                "values": value
             }
             return render(request, 'signup.html', context)
 
-
     else:
         return render(request, 'signup.html', {})
+
+
+def login(request):
+    if request.method == "POST":
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        customer = Customer.objects.get(email=email)
+        error_message = None
+        if customer:
+            flag = check_password(password, customer.password)
+            if flag:
+                return redirect('index_shop')
+            else:
+                error_message = "Email/Password is Wrong !!! Plzz Try Again"
+
+        else:
+            error_message = "Email/Password is Wrong !!! Plzz Try Again"
+        context = {
+            "error_message": error_message
+        }
+
+        return render(request, 'login.html', context)
+    else:
+        return render(request, 'login.html', {})
