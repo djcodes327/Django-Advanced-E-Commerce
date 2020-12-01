@@ -7,7 +7,7 @@ from ecommerce.models import *
 
 class ProductAdmin(admin.ModelAdmin):
     # Setting how will admin site displays products data
-    list_display = ('name', 'price', 'quantity', 'created_at', 'updated_at')
+    list_display = ('id','name', 'price', 'quantity', 'created_at', 'updated_at')
     list_display_links = ('name',)
     list_per_page = 50
     ordering = ['-created_at']

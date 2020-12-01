@@ -3,19 +3,18 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Product, Category, Customer
 from django.contrib.auth.hashers import make_password, check_password
-
-
 # Create your views here.
 
 
 def index(request):
-    products = Product.objects.all()
-    categories = Category.objects.all()
-    context = {
-        'products': products,
-        'categories': categories
-    }
-    return render(request, 'index.html', context)
+        products = Product.objects.all()
+        categories = Category.objects.all()
+        email = request.session.get('customer_email')
+        context = {
+            'products': products,
+            'categories': categories,
+        }
+        return render(request, 'index.html', context)
 
 
 def about(request):
@@ -23,20 +22,46 @@ def about(request):
 
 
 def collection(request):
-    products_collection = None
-    categories_collection = Category.objects.all()
-    categoryfilter = request.GET.get('category')
-    print(request.GET.get('category'))
-    if categoryfilter:
-        products_collection = Product.objects.filter(categories=categoryfilter, )
-    else:
-        products_collection = Product.objects.all()
+    if request.method == "GET":
+        cart = request.session.get('cart')
+        if not cart:
+            request.session['cart'] = {}
+        products_collection = None
+        categories_collection = Category.objects.all()
+        categoryfilter = request.GET.get('category')
+        if categoryfilter:
+            products_collection = Product.objects.filter(categories=categoryfilter, )
+        else:
+            products_collection = Product.objects.all()
 
-    context = {
-        'products': products_collection,
-        'categories': categories_collection
-    }
-    return render(request, 'collection.html', context)
+        context = {
+            'products': products_collection,
+            'categories': categories_collection
+        }
+        return render(request, 'collection.html', context)
+
+    else:
+        product = request.POST.get('product')
+        cart = request.session.get('cart')
+        remove = request.POST.get('remove')
+        if cart:
+            quantity = cart.get(product)
+            if quantity:
+                if remove:
+                    if quantity <= 1:
+                        cart.pop(product)
+                    else:
+                        cart[product] = quantity-1
+                else:
+                    cart[product] = quantity+1
+            else:
+                cart[product] = 1
+        else:
+            cart = {}
+            cart[product] = 1
+        request.session['cart'] = cart
+
+        return redirect('collection')
 
 
 def signup(request):
@@ -107,6 +132,8 @@ def login(request):
         if customer:
             flag = check_password(password, customer.password)
             if flag:
+                request.session['customer_id'] = customer.id
+                request.session['customer_email'] = customer.email
                 return redirect('index_shop')
             else:
                 error_message = "Email/Password is Wrong !!! Plzz Try Again"
@@ -120,3 +147,4 @@ def login(request):
         return render(request, 'login.html', context)
     else:
         return render(request, 'login.html', {})
+

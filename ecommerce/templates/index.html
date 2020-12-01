@@ -4,14 +4,17 @@
     <title>Home- Django Ecommerce</title>
 
     <style>
+
         .col-md-3 {
             display: inline-block !important;
             margin-left: -4px;
         }
 
         .col-md-3 img {
-            width: 250px;
-            height: 200px;
+            width: auto;
+          height: 200px;
+          background-repeat: no-repeat;
+          background-size: contain;
         }
 
         body .carousel-control-prev-icon,
@@ -33,9 +36,7 @@
 
 {% block content %}
 
-
 <!--        carousel indicators starts from here-->
-
 <div class="container" xmlns:data="http://www.w3.org/1999/xhtml">
     <div id="demo" class="carousel slide my-3" data-ride="carousel">'
         <ul class="carousel-indicators">
@@ -55,7 +56,7 @@
                 <img src='/media/{{ products.0.image }}' class="card-img-top" alt="...">
                 <div class="card-body">
                   <h5 class="card-title">{{ products.0.name }}</h5>
-                  <p class="card-text">{{ products.0.description|slice:":200" }}</p>
+                  <p class="card-text">{{ products.0.description|slice:":50" }}</p>
                   <a href="#" class="btn btn-primary">Add to Cart</a>
                 </div>
               </div>
@@ -67,13 +68,13 @@
                 <img src='/media/{{ i.image }}' class="card-img-top" alt="...">
                 <div class="card-body">
                   <h5 class="card-title">{{ i.name }}</h5>
-                  <p class="card-text">{{ i.description|slice:":200" }}</p>
+                  <p class="card-text">{{ i.description|slice:":50" }}</p>
                   <a href="#" class="btn btn-primary">Add to Cart</a>
                 </div>
               </div>
             </div>
 
-            {% if forloop.counter|divisibleby:3 and forloop.counter > 0 and not forloop.last %}
+            {% if forloop.counter|divisibleby:3 and forloop.counter > 0  and not forloop.last %}
              </div><div class="carousel-item">
             {% endif%}
 
