@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+import datetime
 
 
 # Create your models here.
@@ -66,7 +67,7 @@ class Product(models.Model):
     @staticmethod
     def get_products_by_category(category_id):
         if category_id:
-            Product.objects.filter(categories=category_id,)
+            Product.objects.filter(categories=category_id, )
         else:
             Product.objects.all()
 
@@ -83,4 +84,18 @@ class Customer(models.Model):
         verbose_name_plural = "customers"
 
     def __str__(self):
-        return self.first_name + self.last_name
+        return self.first_name + " " + self.last_name
+
+
+class Orders(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    price = models.IntegerField()
+    address = models.CharField(default='', max_length=150, blank=True)
+    phone = models.CharField(default='', max_length=150, blank=True)
+    date = models.DateTimeField(default=datetime.datetime.today)
+
+    class Meta:
+        db_table = "orders"
+        verbose_name_plural = "Orders"

@@ -40,6 +40,14 @@ class CustomerAdmin(admin.ModelAdmin):
     search_fields = ['first_name', 'last_name', 'email', 'phone_number']
 
 
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('customer', 'date')
+    list_display_links = ('customer', )
+    list_per_page = 50
+    ordering = ['customer']
+
+
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Customer, CustomerAdmin)
+admin.site.register(Orders, OrderAdmin)

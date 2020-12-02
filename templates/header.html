@@ -37,22 +37,25 @@
             </ul>
               <ul class="navbar-nav">
                   {% if request.session.customer_id %}
-                  <li class="nav-item">
-                    <a class="nav-link" href="Cart">Cart</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="Order">Order</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="Logout">Logout</a>
-                  </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'cart' %}">Cart</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="Order">Order</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                      </li>
                   {% else %}
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Login</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'signup' %}">Signup</a>
-                  </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'cart' %}">Cart</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'signup' %}">Signup</a>
+                      </li>
                   {% endif %}
 
               </ul>

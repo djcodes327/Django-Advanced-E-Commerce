@@ -1,20 +1,22 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Product, Category, Customer
+from .models import Product, Category, Customer, Orders
 from django.contrib.auth.hashers import make_password, check_password
+
+
 # Create your views here.
 
 
 def index(request):
-        products = Product.objects.all()
-        categories = Category.objects.all()
-        email = request.session.get('customer_email')
-        context = {
-            'products': products,
-            'categories': categories,
-        }
-        return render(request, 'index.html', context)
+    products = Product.objects.all()
+    categories = Category.objects.all()
+    email = request.session.get('customer_email')
+    context = {
+        'products': products,
+        'categories': categories,
+    }
+    return render(request, 'index.html', context)
 
 
 def about(request):
@@ -51,9 +53,9 @@ def collection(request):
                     if quantity <= 1:
                         cart.pop(product)
                     else:
-                        cart[product] = quantity-1
+                        cart[product] = quantity - 1
                 else:
-                    cart[product] = quantity+1
+                    cart[product] = quantity + 1
             else:
                 cart[product] = 1
         else:
@@ -132,6 +134,7 @@ def login(request):
         if customer:
             flag = check_password(password, customer.password)
             if flag:
+                request.session['customer'] = customer
                 request.session['customer_id'] = customer.id
                 request.session['customer_email'] = customer.email
                 return redirect('index_shop')
@@ -147,4 +150,41 @@ def login(request):
         return render(request, 'login.html', context)
     else:
         return render(request, 'login.html', {})
+
+
+def logout(request):
+    request.session.clear()
+    return redirect('login')
+
+
+def cart(request):
+    cart = list(request.session.get('cart').keys())
+    products = Product.objects.filter(id__in=cart)
+    context = {
+        'products': products
+    }
+    return render(request, 'cart.html', context)
+
+
+def checkout(request):
+    if request.method == "POST":
+        address = request.POST.get('address')
+        phone = request.POST.get('phone')
+        customer = request.session.get('customer_id')
+        cart_keys = list(request.session.get('cart').keys())
+        cart = request.session.get('cart')
+        products = Product.objects.filter(id__in=cart_keys)
+
+        for product in products:
+            Orders.objects.create(
+                customer=Customer(id=customer),
+                address=address,
+                phone=phone,
+                price=product.price,
+                product=product,
+                quantity=cart.get(str(product.id))
+            )
+            request.session['cart'] = {}
+
+        return redirect('cart')
 
