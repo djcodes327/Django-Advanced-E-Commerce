@@ -6,8 +6,9 @@
 {% endblock %}
 
 {% block content %}
-
-
+    {% if error_message %}
+        <h1>{{ error_message }}</h1>
+    {% endif %}
     <div class="container">
     <br>
         <h1>Cart</h1>

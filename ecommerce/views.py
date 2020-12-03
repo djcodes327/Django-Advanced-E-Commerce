@@ -1,11 +1,20 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+
 from .models import Product, Category, Customer, Orders
 from django.contrib.auth.hashers import make_password, check_password
+from .serializers import ProductSerializer
 
 
 # Create your views here.
+
+class ProductViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
 
 def index(request):
@@ -158,10 +167,17 @@ def logout(request):
 
 
 def cart(request):
+    error_message = None
+    products = ""
     cart = list(request.session.get('cart').keys())
-    products = Product.objects.filter(id__in=cart)
+    status_cart = bool(cart)
+    if not status_cart:
+        error_message = "Cart is Empty"
+    else:
+        products = Product.objects.filter(id__in=cart)
     context = {
-        'products': products
+        'products': products,
+        'error_message': error_message
     }
     return render(request, 'cart.html', context)
 
@@ -188,3 +204,10 @@ def checkout(request):
 
         return redirect('cart')
 
+
+def orders(request):
+    customer = request.session.get('customer_id')
+    customer_order = Orders.objects.filter(customer=customer)
+    print(customer_order)
+
+    return render(request, 'orders.html')
